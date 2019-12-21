@@ -4,7 +4,7 @@ public class TurnHandler {
     private PlayerSet players;
     private IOHandler printer;
 
-    private int turn;
+    private int turn; // turn counter
 
     public TurnHandler(PlayerSet players, IOHandler printer){
         this.players = players;
@@ -13,22 +13,22 @@ public class TurnHandler {
         turn = 0;
     }
 
-
+    // returns current player
     public Player getCurrentPlayer(){
         return players.getPlayer(turn);
     }
 
-
+    // takes turn
     public void takeTurn(DiceSet allDice){
-        Player player = getCurrentPlayer();
+        Player player = getCurrentPlayer(); // current player
         ++ turn;
 
         int shotsTaken = 0;
         int roundPoints = 0;
 
-        DiceSet remainingDice = new DiceSet(allDice);
-        DiceSet rolledDice = new DiceSet();
-        DiceSet currentDice = new DiceSet();
+        DiceSet remainingDice = new DiceSet(allDice); // dice not rolled yet
+        DiceSet rolledDice = new DiceSet(); // dice already rolled
+        DiceSet currentDice = new DiceSet(); // dice currently being rolled.
 
         remainingDice.shuffle();
 
@@ -41,19 +41,20 @@ public class TurnHandler {
 
             printer.printState(turn, roundPoints, shotsTaken, remainingDice.diceInfo());
 
-            boolean choice = printer.getChoice();
+            boolean choice = printer.getChoice(); // user decision
 
             if (choice) {
                 currentDice.roll();
 
-                int numBrain = currentDice.countNumber(sideType.BRAIN);
-                int numShot = currentDice.countNumber(sideType.SHOTGUN);
+                int numBrain = currentDice.countNumber(sideType.BRAIN); // finds number of brains
+                int numShot = currentDice.countNumber(sideType.SHOTGUN); // finds number of shots
 
-                printer.printDice(currentDice);
-                printer.printEvents(numBrain, numShot);
+                printer.printDice(currentDice); // prints rolled dice
+                printer.printEvents(numBrain, numShot); // prints events of round
 
                 shotsTaken += numShot;
 
+                // if player dead
                 if (shotsTaken >= 3) {
                     printer.printDeath();
                     printer.endRound(0);
@@ -62,11 +63,13 @@ public class TurnHandler {
 
                 roundPoints += numBrain;
 
+                // if player has won
                 if (player.getPoints() + roundPoints >= 13){
                     player.addPoint(roundPoints);
                     break;
                 }
 
+                // all non-runners added to a toMove array that is put in rolledDice
                 ArrayList<Die> toMove = new ArrayList<>();
 
                 for (Die die : currentDice.getDice()) {
@@ -78,12 +81,16 @@ public class TurnHandler {
                 rolledDice.addAll(toMove);
                 currentDice.removeAll(toMove);
 
+                // adds number of dice move from remainingDice to currentDice
                 for (int i = 0; i < toMove.size(); ++i){
                     remainingDice.shuffle();
                     currentDice.addDie(remainingDice.draw());
                 }
 
-            } else {
+            }
+
+            // if player ends round
+            else {
                 player.addPoint(roundPoints);
                 printer.endRound(roundPoints);
                 break;

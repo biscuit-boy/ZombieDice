@@ -17,18 +17,9 @@ public class IOHandler {
         in = new Scanner(System.in);
     }
 
-    private void print(String center){
-        print("", center, "");
-    }
-
-    private void print(String left, String right){
-        print(left, "", right);
-    }
-
-    private void print(String left, String center, String right){
-        print(left, center, right, true);
-    }
-
+    // prints pretty, centered line
+    // center will be centered, and left and right are centered in the two remaining spaces
+    // the boolean "sides" determines whether the line will be printed with walls
     private void print(String left, String center, String right, boolean sides){
         int walls;
 
@@ -43,6 +34,7 @@ public class IOHandler {
         int leftSpaceLen = (sideLen - left.length()) / 2;
         int rightSpaceLen = (sideLen - right.length()) / 2;
 
+        // so that the line will always be 'width' wide
         int lastSpaceLen = width - walls - 2*leftSpaceLen - left.length() - center.length() - rightSpaceLen - right.length();
 
         String leftSpace = "";
@@ -69,10 +61,28 @@ public class IOHandler {
         }
     }
 
+    private void print(String center){
+        print("", center, "");
+    }
+
+    private void print(String left, String right){
+        print(left, "", right);
+    }
+
+    private void print(String left, String center, String right){
+        print(left, center, right, true);
+    }
+
     private void print(String center, boolean sides){
         print("", center, "", sides);
     }
 
+    // makes 'lines' blank lines, with or without walls (default with)
+    private void newLine(int lines, boolean walls){
+        for (int i = 0; i < lines; ++i){
+            print("", "", "", walls);
+        }
+    }
     private void newLine(){
         newLine(true);
     }
@@ -81,12 +91,7 @@ public class IOHandler {
         newLine(1, walls);
     }
 
-    private void newLine(int lines, boolean walls){
-        for (int i = 0; i < lines; ++i){
-            print("", "", "", walls);
-        }
-    }
-
+    // makes horizontal line across screen of width width
     private void line(){
         String topLine = "";
         for (int i = 0; i < width; i++){
@@ -96,6 +101,7 @@ public class IOHandler {
         System.out.println("  " + topLine);
     }
 
+    // intro screen
     public void intro(){
         line();
         newLine();
@@ -106,12 +112,16 @@ public class IOHandler {
         line();
     }
 
+    // prints info on current round in a box before the player rolls.
     public void printState(int turn, int points, int shots, String diceInfo){
         line();
         newLine();
 
+        // if player 1 turn
         if (turn % 2 != 0) {
+            // in player 1 column
             print(player1.toString() + "'s Turn", "");
+
             int underline = player1.toString().length();
 
             String temp = "";
@@ -121,8 +131,12 @@ public class IOHandler {
 
             print(temp, "");
         }
+
+        // if player 2 turn
         else {
+            // in player 2 column
             print("", player2.toString() + "'s Turn");
+
             int underline = player2.toString().length();
 
             String temp = "";
@@ -152,6 +166,7 @@ public class IOHandler {
         line();
     }
 
+    // makes colorType usable for printing dice
     private String buffColor(colorType color){
         switch (color){
             case GREEN:  return "| Green |";
@@ -162,6 +177,7 @@ public class IOHandler {
         return "";
     }
 
+    // makes sideType usable for printing dice
     private String buffSide(sideType side){
         switch (side){
             case RUNNER:  return "|Runner |";
@@ -172,8 +188,9 @@ public class IOHandler {
         return "";
     }
 
+    // displays centered dice
     public void printDice(DiceSet dice){
-        String buff = "   "; //4
+        String buff = "   "; // distance between dice (4 spaces)
 
         String topStr = "---------" + buff + "---------" + buff + "---------" ;
         String midStr = "|       |" + buff + "|       |" + buff + "|       |" ;
@@ -194,9 +211,11 @@ public class IOHandler {
         print(topStr, false);
     }
 
+    // prints what happened last roll
     public void printEvents(int points, int shots){
         newLine(false);
 
+        // if/else for grammar
         if (points == 1){
             print("You got 1 point!", false);
         }
@@ -214,14 +233,17 @@ public class IOHandler {
         newLine(false);
     }
 
+    // displays death info
     public void printDeath(){
         newLine(false);
         print(" -- You have died! -- ", false);
     }
 
+    // ends round
     public void endRound(int points){
         newLine(false);
 
+        // for grammar
         if (points == 1){
             print("You scored 1 point this round!", false);
         }
@@ -235,6 +257,8 @@ public class IOHandler {
         newLine(2, false);
     }
 
+    // processes choice
+    // returns -1 if round over, 1 if roll again, 0 if it cannot determine
     private int checkChoice(String choice){
         choice.replace(" ", "");
         choice = choice.toLowerCase();
@@ -259,10 +283,12 @@ public class IOHandler {
         return value;
     }
 
+    // gets user input on rolling (dummy proof)
     public boolean getChoice(){
         newLine(false);
         String prompt = "Would you like to roll? (yes / no) ";
 
+        // custom spacing because we wish to read on same line
         int spaces = 2 + (width - prompt.length()) / 2;
 
         String space = "";
@@ -271,6 +297,7 @@ public class IOHandler {
             space += " ";
         }
 
+        // loops until receive valid answer
         int valid = 0;
 
         while (valid == 0) {
@@ -290,6 +317,7 @@ public class IOHandler {
         }
     }
 
+    // end of game message
     public void endGame(Player winner){
         newLine(false);
         line();

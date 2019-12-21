@@ -1,16 +1,16 @@
-import java.util.ArrayList;
-
 public class Game {
     private PlayerSet players;
     private DiceSet allDice;
-    private TurnHandler turnHandler;
-    private IOHandler printer;
+    private TurnHandler turnHandler; // handles turn taking
+    private IOHandler printer; // handles input and output
 
     static final int NUM_GREEN = 6;
     static final int NUM_YELLOW = 4;
     static final int NUM_RED = 3;
 
     public Game(){
+        // creates PlayerSet of players, adding two by default
+
         players = new PlayerSet();
 
         Player player1 = new Player("Player One");
@@ -19,15 +19,7 @@ public class Game {
         players.addPlayer(player1);
         players.addPlayer(player2);
 
-        this.allDice = generateDice();
-
-        this.printer = new IOHandler(this.players);
-
-        this.turnHandler = new TurnHandler(this.players, this.printer);
-    }
-
-    public Game(ArrayList<Player> players){
-        this.players = new PlayerSet(players);
+        // instantiating attributes
 
         this.allDice = generateDice();
 
@@ -36,8 +28,10 @@ public class Game {
         this.turnHandler = new TurnHandler(this.players, this.printer);
     }
 
+    // starts game
     public void play(){
         printer.intro();
+
         while (!gameOver()){
             takeTurn();
         }
@@ -45,6 +39,7 @@ public class Game {
         printer.endGame(players.getWinner());
     }
 
+    // creates "bag" of dice
     private DiceSet generateDice(){
         DiceSet dice = new DiceSet();
 
@@ -70,16 +65,9 @@ public class Game {
         turnHandler.takeTurn(allDice);
     }
 
-    public Player currentPlayer(){
-        return turnHandler.getCurrentPlayer();
-    }
-
+    // checks if someone has won
     private boolean gameOver(){
         return players.gameOver();
-    }
-
-    public PlayerSet getPlayers(){
-        return players;
     }
 
 }
