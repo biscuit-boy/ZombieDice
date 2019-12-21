@@ -1,0 +1,9 @@
+
+public class ZombieDice {
+    public static void main(String[] args) {
+        Game game = new Game();
+
+        game.play();
+
+    }
+}
